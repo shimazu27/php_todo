@@ -2,15 +2,17 @@
 require('db_connect.php');
 if(isset($_POST['submit'])){
   $name=$_POST['name'];
+  $task=$_POST['task'];
   $name=htmlspecialchars($name,ENT_QUOTES);
+  $name=htmlspecialchars($task,ENT_QUOTES);
+  $dbh=db_connect();
+  $sql='INSERT INTO todos (name,task) VALUES (?,0)';
+  $stmt=$dbh->prepare($sql);
 
-$sql='INSERT INTO todos (name,task) VALUES (?,0)';
-$stmt=$dbh->prepare($sql);
-
-$stmt->bindvalue(1,$name,PDO::PARAM_STR);
-$stmt->execute();
-unset($name);
-}
+  $stmt->bindvalue(1,$name,PDO::PARAM_STR);
+  $stmt->execute();
+  unset($name);
+ }
 ?>
 
 <html>
@@ -33,17 +35,15 @@ unset($name);
     </tr>
 
     <?php
-    $dbh=db_connect();
     $sql='SELECT id, name,task FROM todos';
     $stmt=$dbh->prepare($sql);
     $stmt->execute();
     $dbh=null;
 
-     while($todo = $stmt->fetch()) {
+     while($task = $stmt->fetch()) {
       echo "<tr>";
       echo "<td>".$task['name']."</td>";
       echo "<td>".$task['task']."</td>";
-
       echo "<td>";
       echo "<form action='index.php' method='post'>";
       echo "<input type='submit' value='削除'>";
