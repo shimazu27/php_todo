@@ -1,20 +1,18 @@
 <?php
-$dbname = 'todos';
-$host = 'localhost';
-$user = 'root';
-$password = 'pascal27';
-$dns = 'mysql:dbname='.$dbname.';host='.$host.';charset=utf8';
-
-try {
-	$dbh = new PDO($dns, $user, $password,
-	array(
-	PDO::ATTR_ERRMODE => PDO::ERRMODE_EXCEPTION)
-	);
-	if ($dbh == null) {
-		print_r('接続失敗');
-	}
-} catch(PDOException $e) {
+function db_connect(){
+ try {
+	 $dbname = 'todos';
+	 $host = 'localhost';
+	 $user = 'root';
+	 $password = 'pascal27';
+	 $dns = 'mysql:dbname='.$dbname.';host='.$host.';charset=utf8';
+   $dbh = new PDO($dns, $user, $password);
+	 $dbh->query('SET NAMES utf8');
+	 $dbh->setAttribute(PDO::ATTR_EMULATE_PREPARES,false);
+	 return $dbh;
+ } catch(PDOException $e) {
 	echo('Connection failed:'.$e->getMessage());
 	die();
-}
+  }
+ }
 ?>
