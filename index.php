@@ -5,12 +5,15 @@ if(isset($_POST['submit'])){
   $name = htmlspecialchars($name,ENT_QUOTES);
   $task = $_POST['task'];
   $task = htmlspecialchars($task,ENT_QUOTES);
+  $option = $_POST['option'];
+  $option = htmlspecialchars($option,ENT_QUOTES);
   $dbh = db_connect();
 
-  $sql = 'INSERT INTO todos (name,task,done) VALUES (?,?,0)';
+  $sql = 'INSERT INTO todos (name,task,option,done) VALUES (?,?,?,0)';
   $stmt = $dbh->prepare($sql);
   $stmt->bindvalue(1,$name,PDO::PARAM_STR);
   $stmt->bindValue(2,$task,PDO::PARAM_STR);
+  $stmt->bindValue(3,$option,PDO::PARAM_STR);
   $stmt->execute();
   $dbh = null;
   unset($name);
@@ -23,7 +26,7 @@ if(isset($_POST['submit'])){
    $id = (int)$id;
 
    $dbh = db_connect();
-   $sql = 'UPDATE tasks SET done = 1 WHERE id = ?';
+   $sql = 'UPDATE todos SET done = 1 WHERE id = ?';
    $stmt = $dbh->prepare($sql);
    $stmt->bindvalue(1,$id,PDO::PARAM_INT);
    $stmt->execute();
@@ -41,6 +44,7 @@ if(isset($_POST['submit'])){
   <form action="index.php" method="post">
     <p><label>名前<input type="text" name="name"></label></a>
     <p><label>タスク<input type="text" name="task"></label></a>
+    <p><label>オプション<input type="text" name="option"></label></a>
     <p><input type="submit" name="submit"></p>
   </form>
   <br>
@@ -48,11 +52,12 @@ if(isset($_POST['submit'])){
     <tr>
       <th>名前</th>
       <th>タスク</th>
+      <th>オプション</th>
     </tr>
 
     <?php
     $dbh=db_connect();
-    $sql='SELECT id, name task FROM todos WHERE done = 0 ORDER BY id DESC';
+    $sql='SELECT id,name,task,option FROM todos WHERE done = 0 ORDER BY id DESC';
     $stmt=$dbh->prepare($sql);
     $stmt->execute();
     $dbh=null;
@@ -61,6 +66,7 @@ if(isset($_POST['submit'])){
       echo "<tr>";
       echo "<td>".$task['name']."</td>";
       echo "<td>".$task['task']."</td>";
+      echo "<td>".$task['option']."</td>";
       echo "<td>";
       echo "<form action='index.php' method='post'>";
       echo "<input type='submit' value='削除'>";
